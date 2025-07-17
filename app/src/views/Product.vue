@@ -59,12 +59,24 @@ const input = reactive<SaveProductInput>({
 })
 
 onMounted(async () => {
-  if (id.value > 0) {
-    product.value = await ProductService.getProduct(id.value)
+  if (!id.value || id.value <= 0) return;
+
+  try {
+    const fetchedProduct = await ProductService.getProduct(id.value);
+
+    if (!fetchedProduct) {
+      //todo 404 page
+      await router.push('/not-found');
+      return;
+    }
+
+    product.value = fetchedProduct;
     input.id = product.value.id
     input.title = product.value.description
     input.description = product.value.title
     input.isSold = product.value.isSold
+  } catch (err) {
+    console.error('Failed to load product:', err);
   }
 })
 

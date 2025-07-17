@@ -17,15 +17,18 @@ public class ProductsController : ControllerBase
     }
 
     [HttpGet]
-    public Task<List<Product>> Get()
+    public async Task<ActionResult<List<Product>>> Get([FromQuery] bool? isSold = null)
     {
-        return _productService.GetProductsAsync();
+        var products = await _productService.GetProductsAsync(isSold);
+        return products.Count > 0 ? Ok(products) : NotFound();
     }
 
     [HttpGet("{id}")]
-    public Task<Product> Get(int id)
+    public async Task<ActionResult<Product>> Get(int id)
     {
-        return _productService.GetProductAsync(id);
+        var product = await _productService.GetProductAsync(id);
+
+        return product == null ? NotFound() : Ok(product);
     }
 
     [HttpPost]

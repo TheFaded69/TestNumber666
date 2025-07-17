@@ -15,14 +15,21 @@ public class ProductService : IProductService
         _dbContext = dbContext;
     }
 
-    public Task<List<Product>> GetProductsAsync()
+    public Task<List<Product>> GetProductsAsync(bool? isSold = null)
     {
-        return _dbContext.Products.AsNoTracking().Where(x => x.DeletedAt == null).OrderByDescending(x => x.Id).ToListAsync();
+        var query = _dbContext.Products.AsNoTracking().Where(x => x.DeletedAt == null);
+
+        if (isSold.HasValue)
+        {
+            query = query.Where(x => x.IsSold == isSold.Value);
+        }
+
+        return query.OrderByDescending(x => x.Id).ToListAsync();
     }
 
     public Task<Product> GetProductAsync(int id)
     {
-        return _dbContext.Products.AsNoTracking().FirstAsync(x => x.Id == id);
+        return _dbContext.Products.AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
     }
 
     public async Task<Product> SaveProductAsync(SaveProductInput input)
