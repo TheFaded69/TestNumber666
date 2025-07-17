@@ -20,7 +20,7 @@ public class ProductsController : ControllerBase
     public async Task<ActionResult<List<Product>>> Get([FromQuery] bool? isSold = null)
     {
         var products = await _productService.GetProductsAsync(isSold);
-        return products.Count > 0 ? Ok(products) : NotFound();
+        return Ok(products);
     }
 
     [HttpGet("{id}")]
